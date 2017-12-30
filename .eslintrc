@@ -1,0 +1,32 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "complexity": ["error", 10],
+    "func-names": ["error", "as-needed"],
+    "indent": ["error", 2],
+    "keyword-spacing": ["error", { "before": true, "after": true }],
+    "linebreak-style": ["error", "unix"],
+    "no-multiple-empty-lines": ["error"],
+    "no-trailing-spaces": ["error"],
+    "no-param-reassign": ["error"],
+    "no-shadow": ["error"],
+    "no-unused-expressions": ["error"],
+    "no-unused-vars": ["error", { "args": "after-used", "vars": "all" }],
+    "no-var": ["error"],
+    "prefer-const": ["error"],
+    "prefer-template": ["error"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "space-before-blocks": ["error"],
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "ignore"
+    }]
+  }
+}
