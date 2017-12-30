@@ -44,7 +44,7 @@ knobz.configure({
   }]
 });
 
-if (knobz.isFeatureEnabled('one_click_checkout_beta'), user) {
+if (knobz.isFeatureEnabled('one_click_checkout_beta', user)) {
   // display one-click checkout button
 }
 ```
@@ -64,7 +64,7 @@ knobz.configure({
   }]
 });
 
-if (knobz.isFeatureEnabled('cool_new_email_for_managers'), user) {
+if (knobz.isFeatureEnabled('cool_new_email_for_managers', user)) {
   // send new email only to managers
 }
 ```
