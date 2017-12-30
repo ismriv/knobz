@@ -1,5 +1,5 @@
 # knobz
-Knobz lets you declare and manage feature flags in your JavaScript/Node.js application using [JSON Predicates](https://tools.ietf.org/id/draft-snell-json-test-01.html) to declarative configure whether features should be enabled.
+knobz lets you declare and manage feature flags in your JavaScript/Node.js application using [JSON Predicates](https://tools.ietf.org/id/draft-snell-json-test-01.html) to declarative configure whether features should be enabled.
 
 ## Quick Start
 
@@ -26,7 +26,6 @@ knobz.configure({
 if (knobz.isFeatureEnabled('user_account_lockout')) {
   // user account should be locked
 }
-});
 ```
 
 Do phased rollouts to percentages of your users to verify that the feature behaves as expected:
