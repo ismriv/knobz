@@ -1,6 +1,9 @@
 # knobz
 knobz lets you declare and manage feature flags in your JavaScript/Node.js application using [JSON Predicates](https://tools.ietf.org/id/draft-snell-json-test-01.html) to declarative configure whether features should be enabled.
 
+[![Build Status](https://travis-ci.org/ismriv/knobz.svg?branch=master)](https://travis-ci.org/ismriv/knobz)
+[![Dependency Status](https://gemnasium.com/badges/github.com/ismriv/knobz.svg)](https://gemnasium.com/github.com/ismriv/knobz)
+
 ## Quick Start
 
 Install the module using npm:
