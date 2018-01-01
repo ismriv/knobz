@@ -1,5 +1,6 @@
 # knobz
 
+[![npm version](https://badge.fury.io/js/knobz.svg)](https://badge.fury.io/js/knobz)
 [![Build Status](https://travis-ci.org/ismriv/knobz.svg?branch=master)](https://travis-ci.org/ismriv/knobz)
 [![Dependency Status](https://gemnasium.com/badges/github.com/ismriv/knobz.svg)](https://gemnasium.com/github.com/ismriv/knobz)
 
