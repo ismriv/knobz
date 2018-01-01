@@ -1,15 +1,16 @@
 # knobz
-knobz lets you declare and manage feature flags in your JavaScript/Node.js application using [JSON Predicates](https://tools.ietf.org/id/draft-snell-json-test-01.html) to declarative configure whether features should be enabled.
 
 [![Build Status](https://travis-ci.org/ismriv/knobz.svg?branch=master)](https://travis-ci.org/ismriv/knobz)
 [![Dependency Status](https://gemnasium.com/badges/github.com/ismriv/knobz.svg)](https://gemnasium.com/github.com/ismriv/knobz)
+
+knobz lets you declare and manage feature flags in your JavaScript/Node.js application using [JSON Predicates](https://tools.ietf.org/id/draft-snell-json-test-01.html) to declarative configure whether features should be enabled.
 
 ## Quick Start
 
 Install the module using npm:
 
-```bash
-$ npm install knobz --save
+```shell
+npm install knobz --save
 ```
 
 Usage example in Node.js:
@@ -31,7 +32,9 @@ if (knobz.isFeatureEnabled('user_account_lockout')) {
 }
 ```
 
-Do phased rollouts to percentages of your users to verify that the feature behaves as expected:
+### Phased rollouts
+
+If you're rolling out a new feature, you might want to verify the feature as expected by slowly enabling it for a percentage of your users.
 
 ```js
 knobz.configure({
@@ -39,17 +42,23 @@ knobz.configure({
     id: 'one_click_checkout_beta',
     description: 'Phased rollout of feature that allows to make online purchases with a single click.',
     owner: 'Ismael Rivera <me@ismaelrivera.es>',
-    percentage: 10,
+    percentage: 0.2, // 20%
     percentagePath: '/email'
   }]
 });
-
-if (knobz.isFeatureEnabled('one_click_checkout_beta', user)) {
-  // display one-click checkout button
-}
 ```
 
-Restrict feature to a subset of users based on their job title:
+The algorithm for determining whether the feature is enabled for a given context is as follows:
+
+```js
+djb2(String(valueAtPath)) % 100 < (feature.percentage * 100);
+```
+
+### Define feature criteria using JSON Predicate
+
+Features may be enabled only if a given context satisfies its `criteria`, defined as a [JSON Predicate](https://tools.ietf.org/id/draft-snell-json-test-01.html).
+
+The following example enables the feature to a subset of users based on their job title:
 
 ```js
 knobz.configure({
@@ -63,19 +72,36 @@ knobz.configure({
     }
   }]
 });
-
-if (knobz.isFeatureEnabled('cool_new_email_for_managers', user)) {
-  // send new email only to managers
-}
 ```
+
+## API
+
+### configure(options)
+
+Configure knobz using any of the following options:
+
+- `features`: can be either an array of features or a function to load features dynamically. If a function is passed, it must return a Promise that resolves to an array of features.
+- `reloadInterval`: interval in ms used by knobz to reload features when configured with a function to load features dynamically.
+
+### getFeatures(context)
+
+Return object with all features IDs as properties, and true/false as values, indicating whether they are enabled for a given context.
+
+### isFeatureEnabled(featureId, context)
+
+Return true/false if a feature is enabled for a given context.
+
+### reload()
+
+Force a reload by calling the configured function to load features dynamically.
 
 ## Tests
 
-  To run the test suite, first install the dependencies, then run `npm test`:
+To run the test suite, first install the dependencies, then run `npm test`:
 
-```bash
-$ npm install
-$ npm test
+```shell
+npm install
+npm test
 ```
 
 ## License

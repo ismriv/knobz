@@ -1,51 +1,53 @@
 const knobz = require('../lib');
 
-const config = {
-  features: [{
-    id: 'only_id'
-  }, {
-    id: 'with_criteria',
-    criteria: {
-      op: 'contains',
-      path: '/category',
-      value: ['toys']
-    }
-  }, {
-    id: 'with_criteria_and_enabled_false',
-    enabled: false,
-    criteria: {
-      op: 'test',
-      path: '/category',
-      value: 'fruit'
-    }
-  }, {
-    id: 'with_criteria_and_enabled_true',
-    enabled: true,
-    criteria: {
-      op: 'test',
-      path: '/category',
-      value: 'jeans'
-    }
-  }, {
-    id: 'no_criteria_and_enabled_true',
-    enabled: true
-  }, {
-    id: 'with_percentage',
-    percentage: 20
-  }, {
-    id: 'with_percentage_and_percentage_path',
-    percentage: 30,
-    percentagePath: 'category'
-  }, {
-    id: 'with_percentage_and_criteria',
-    percentage: 60,
-    percentagePath: '/nested/key',
-    criteria: {
-      op: 'test',
-      path: '/nested/key',
-      value: 'sixty'
-    }
-  }]
+const features = [{
+  id: 'only_id'
+}, {
+  id: 'with_criteria',
+  criteria: {
+    op: 'contains',
+    path: '/category',
+    value: ['toys']
+  }
+}, {
+  id: 'with_criteria_and_enabled_false',
+  enabled: false,
+  criteria: {
+    op: 'test',
+    path: '/category',
+    value: 'fruit'
+  }
+}, {
+  id: 'with_criteria_and_enabled_true',
+  enabled: true,
+  criteria: {
+    op: 'test',
+    path: '/category',
+    value: 'jeans'
+  }
+}, {
+  id: 'no_criteria_and_enabled_true',
+  enabled: true
+}, {
+  id: 'with_percentage',
+  percentage: 20
+}, {
+  id: 'with_percentage_and_percentage_path',
+  percentage: 30,
+  percentagePath: 'category'
+}, {
+  id: 'with_percentage_and_criteria',
+  percentage: 60,
+  percentagePath: '/nested/key',
+  criteria: {
+    op: 'test',
+    path: '/nested/key',
+    value: 'sixty'
+  }
+}];
+const enabledFeature = {
+  id: 'enabled_feature',
+  enabled: true
 };
 
 const contextOne = {
@@ -63,12 +65,79 @@ const contextThree = {
   }
 };
 
+const delay = (time) => (result) => new Promise(resolve => setTimeout(() => resolve(result), time));
+
 describe('knobz', () => {
-  beforeAll(() => {
-    return knobz.configure(config);
+  describe('#configure', () => {
+    it('should invoke function to fetch features', () => {
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      return knobz.configure({
+        features: fetchFeaturesMock
+      }).then(() => {
+        expect(fetchFeaturesMock).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should invoke function to reload features every given interval', () => {
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      return knobz.configure({
+        features: fetchFeaturesMock,
+        reloadInterval: 20
+      }).then(delay(70)).then(() => {
+        expect(fetchFeaturesMock).toHaveBeenCalledTimes(4);
+      });
+    });
+
+    it('should configure features returned from function', () => {
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      return knobz.configure({
+        features: fetchFeaturesMock
+      }).then(() => {
+        expect(knobz.isFeatureEnabled(enabledFeature.id)).toBe(true);
+      });
+    });
+  });
+
+  describe('#reload', () => {
+    it('should keep existing features if no function to reload features is set', () => {
+      return knobz.configure({
+        features: [enabledFeature]
+      }).then(() => {
+        return knobz.reload();
+      }).then(() => {
+        expect(knobz.isFeatureEnabled(enabledFeature.id)).toBe(true);
+      });
+    });
+
+    it('should reload features using fetch function set', () => {
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValueOnce(Promise.resolve([]))
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      return knobz.configure({
+        features: fetchFeaturesMock
+      }).then(() => {
+        expect(knobz.isFeatureEnabled(enabledFeature.id)).toBe(false);
+      }).then(() => {
+        return knobz.reload();
+      }).then(() => {
+        expect(fetchFeaturesMock).toHaveBeenCalledTimes(2);
+        expect(knobz.isFeatureEnabled(enabledFeature.id)).toBe(true);
+      });
+    });
   });
 
   describe('#getFeatures', () => {
+    beforeAll(() => {
+      return knobz.configure({features});
+    });
+
     it('should return an object of features for a given context', () => {
       const actual = knobz.getFeatures(contextThree);
       const expected = {
@@ -86,6 +155,10 @@ describe('knobz', () => {
   });
 
   describe('#isFeatureEnabled', () => {
+    beforeAll(() => {
+      return knobz.configure({features});
+    });
+
     describe('when feature does not exist', () => {
       it('should return false', () => {
         expect(knobz.isFeatureEnabled('feature_404')).toBe(false);
