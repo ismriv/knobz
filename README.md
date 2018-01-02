@@ -96,6 +96,32 @@ Return true/false if a feature is enabled for a given context.
 
 Force a reload by calling the configured function to load features dynamically.
 
+## Events
+
+knobz is also an event emitter which provides an `on` method allowing your application to listen for any of the following events.
+
+### knobz.on('check', fn)
+
+Triggers whenever the feature is checked with a given context. The listener is called with `featureId`, the `context` used, and the boolean `enabled` indicating whether the feature is enabled.
+
+```js
+{
+  enabled: <Boolean>,
+  featureId: <String>,
+  context: <Object>
+}
+```
+
+### knobz.on('reload', fn)
+
+Triggers whenever the features are reloaded. The listener is called with an object including the features array.
+
+```js
+{
+  features: <Object[]>
+}
+```
+
 ## Tests
 
 To run the test suite, first install the dependencies, then run `npm test`:

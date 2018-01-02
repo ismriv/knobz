@@ -201,4 +201,75 @@ describe('knobz', () => {
       });
     });
   });
+
+  describe('#on(check)', () => {
+    it('should call event listener whenever #isFeaturedEnabled is called', () => {
+      const mockCallback = jest.fn();
+
+      return knobz.configure({
+        features: []
+      }).then(() => {
+        knobz.on('check', mockCallback);
+        knobz.isFeatureEnabled('abc');
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call event listener with enabled, featureId and context', () => {
+      const mockCallback = jest.fn();
+
+      return knobz.configure({
+        features: []
+      }).then(() => {
+        knobz.on('check', mockCallback);
+        knobz.isFeatureEnabled('abc', {name: 'John'});
+        expect(mockCallback).toBeCalledWith({
+          enabled: false,
+          featureId: 'abc',
+          context: {
+            name: 'John'
+          }
+        });
+      });
+    });
+  });
+
+  describe('#on(reload)', () => {
+    it('should call event listener whenever features are reloaded', () => {
+      const mockCallback = jest.fn();
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      knobz.on('reload', mockCallback);
+
+      return knobz.configure({
+        features: fetchFeaturesMock,
+        reloadInterval: 20
+      }).then(delay(70)).then(() => {
+        expect(mockCallback).toHaveBeenCalledTimes(3);
+        expect(mockCallback).toBeCalledWith({
+          features: [enabledFeature]
+        });
+      });
+    });
+
+    it('should call event listener with features dynamically fetched', () => {
+      const mockCallback = jest.fn();
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValue(Promise.resolve([enabledFeature]));
+
+      knobz.on('reload', mockCallback);
+
+      return knobz.configure({
+        features: fetchFeaturesMock
+      }).then(() => {
+        return knobz.reload();
+      }).then(() => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+        expect(mockCallback).toBeCalledWith({
+          features: [enabledFeature]
+        });
+      });
+    });
+  });
 });
