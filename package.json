@@ -1,6 +1,6 @@
 {
   "name": "knobz",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A feature flags/flips/toggles JavaScript library with JSON Predicates support.",
   "main": "lib/index.js",
   "scripts": {
