@@ -65,7 +65,7 @@ const contextThree = {
   }
 };
 
-const delay = (time) => (result) => new Promise(resolve => setTimeout(() => resolve(result), time));
+jest.useFakeTimers();
 
 describe('knobz', () => {
   describe('#configure', () => {
@@ -86,9 +86,11 @@ describe('knobz', () => {
 
       return knobz.configure({
         features: fetchFeaturesMock,
-        reloadInterval: 20
-      }).then(delay(70)).then(() => {
-        expect(fetchFeaturesMock).toHaveBeenCalledTimes(4);
+        reloadInterval: 100
+      }).then(() => {
+        expect(fetchFeaturesMock).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(450);
+        expect(fetchFeaturesMock).toHaveBeenCalledTimes(5);
       });
     });
 
@@ -244,9 +246,12 @@ describe('knobz', () => {
 
       return knobz.configure({
         features: fetchFeaturesMock,
-        reloadInterval: 20
-      }).then(delay(70)).then(() => {
-        expect(mockCallback).toHaveBeenCalledTimes(3);
+        reloadInterval: 10000
+      }).then(() => {
+        expect(mockCallback).toHaveBeenCalledTimes(0);
+        jest.runOnlyPendingTimers();
+      }).then(() => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
         expect(mockCallback).toBeCalledWith({
           features: [enabledFeature]
         });
