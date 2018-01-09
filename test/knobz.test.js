@@ -277,4 +277,25 @@ describe('knobz', () => {
       });
     });
   });
+
+  describe('#on(reload:error)', () => {
+    it('should call event listener whenever load function throws an error', () => {
+      const expectedError = new Error('CONNECTION_ERROR');
+      const mockCallback = jest.fn();
+      const fetchFeaturesMock = jest.fn()
+        .mockReturnValueOnce(Promise.resolve([enabledFeature]))
+        .mockReturnValue(Promise.reject(expectedError));
+
+      knobz.on('reload:error', mockCallback);
+
+      return knobz.configure({
+        features: fetchFeaturesMock
+      }).then(() => {
+        return knobz.reload();
+      }).then(() => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+        expect(mockCallback).toBeCalledWith(expectedError);
+      });
+    });
+  });
 });

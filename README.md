@@ -122,6 +122,10 @@ Triggers whenever the features are reloaded. The listener is called with an obje
 }
 ```
 
+### knobz.on('reload:error', fn)
+
+Triggers whenever the function to reload features throws an error. The event handler is called with the error.
+
 ## Tests
 
 To run the test suite, first install the dependencies, then run `npm test`:
